@@ -64,3 +64,26 @@ This approach generates a `styles/global.css` stylesheet containing the `Tailwin
 ```astro
 import '../styles/global.css'
 ```
+
+### Astro Check
+Setup `Astro Check` to validate `.astro` files and `TypeScript` usage. This performs static diagnostics across the project.
+
+```shell
+$ npm install -D @astrojs/check typescript
+```
+
+Add the script to the `package.json` file:
+
+```json
+{
+  "scripts": {
+    "check": "astro check"
+  }
+}
+```
+
+Run `Astro Check` inside of the project:
+
+```shell
+$ npm run check
+```
