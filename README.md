@@ -437,3 +437,16 @@ const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
 	</body>
 </html>
 ```
+
+The `homepage` can be found here: `src/pages/index.astro`:
+
+```astro
+---
+// Include the page layout/structure.
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+	<h1>Hello, World</h1>
+</Layout>
+```
