@@ -144,6 +144,8 @@ $ npm install @sanity/client
 ```
 
 ### Legacy Approach
+**Note: This is no longer needed, but will be documented anyway.**
+
 Within the `Astro` project, add a file named `src/lib/sanity.ts` with the following code:
 
 ```typescript
