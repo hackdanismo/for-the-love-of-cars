@@ -20,6 +20,23 @@ $ cd for-the-love-of-cars
 $ npm install
 ```
 
+Set the `Node` version using `Node Version Manager`. The `.nvmrc` file sets the recommended `Node` version to use.
+
+Install `Node Version Manager`, if required:
+
+```shell
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
+```
+
+Install `Node` and use the version specified in the `.nvmrc` file:
+
+```shell
+# Install the recommended Node version using Node Version Manager
+$ nvm install
+# Use the Node version
+$ nvm use
+```
+
 Run the development server:
 
 ```shell
