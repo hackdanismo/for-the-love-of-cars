@@ -1,5 +1,6 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
+import { schemaTypes } from './schemaTypes';
 
 export default defineConfig({
   projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
@@ -10,6 +11,6 @@ export default defineConfig({
   ],
 
   schema: {
-    types: [],
+    types: schemaTypes,
   },
 });
