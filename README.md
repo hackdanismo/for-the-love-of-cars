@@ -130,3 +130,50 @@ Run `ESLint`:
 $ npm run lint
 $ npm run lint:fix
 ```
+
+## Content
+`Sanity` is the `Content Management System` platform we are using to manage content and copy across the application. `Astro` handles the frontend, `Sanity` manages the content.
+
+### Install Sanity Client
+Install the `@sanity/client` npm package:
+
+```shell
+$ npm install @sanity/client
+```
+
+Within the `Astro` project, add a file named `src/lib/sanity.ts` with the following code:
+
+```typescript
+import { createClient } from "@sanity/client";
+
+export const sanity = createClient({
+    projectId: "THE_PROJECT_ID",
+    dataset: "production",
+    apiVersion: "2026-09-04",
+    useCdn: true,
+});
+```
+
+Replace `THE_PROJECT_ID` with the ID of the Sanity project.
+
+The `projectId` is not considered a secret and is a public value; they will generally be visible in client-side requests anyway. Tokens, by contrast, must be treated as secret.
+
+Create an `.env.local` file in the project root:
+
+```
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_actual_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+```
+
+Update the `src/lib/sanity.ts` file to reference these values.
+
+```typescript
+import { createClient } from "@sanity/client";
+
+export const sanity = createClient({
+    projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
+    dataset: import.meta.env.PUBLIC_SANITY_DATASET,
+    apiVersion: "2026-09-04",
+    useCdn: true,
+});
+```
