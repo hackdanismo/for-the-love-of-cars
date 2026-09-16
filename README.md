@@ -42,3 +42,10 @@ Run the development server:
 ```shell
 $ npm run dev
 ```
+
+### Install Astro
+Use `NPM` to install `Astro` and setup the scaffold for the application. Follow the terminal commands.
+
+```shell
+$ npm create astro@latest .
+```
