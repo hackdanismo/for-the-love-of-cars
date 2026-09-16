@@ -339,3 +339,101 @@ export default defineConfig({
 ```
 
 After these changes, run the development server and open the `Studio` to see the `Article` appear as a document type.
+
+## Pages
+All pages for the `Astro` application are placed inside of the `src/pages` directory. For a page to dynamically created for each `article` added to the CMS, we use the structure:
+
+```
+src/
+  layouts/
+    Layout.astro
+  pages/
+    articles/
+      [slug].astro
+```
+
+The `pages/articles/[slug].astro` page will look like this:
+
+```astro
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const articles = await sanityClient.fetch(`
+        *[_type == "article" && defined(slug.current)] {
+            "slug": slug.current
+        }
+    `);
+
+    return articles.map((article) => ({
+        params: { slug: article.slug },
+    }));
+}
+
+const { slug } = Astro.params;
+
+const article = await sanityClient.fetch(
+    `*[_type == "article" && slug.current == $slug][0]`,
+    { slug }
+);
+
+if (!article) {
+    return Astro.redirect('/404');
+}
+
+// Example article: http://localhost:4321/articles/new-bmw-i3-to-be-launched-in-2027
+---
+
+<Layout title={article.title}>
+    <h1>{article.title}</h1>
+</Layout>
+```
+
+So we can visit a test article that has been added to the CMS to view the page: `http://localhost:4321/articles/new-bmw-i3-to-be-launched-in-2027`.
+
+The `src/layouts/Layout.astro` file will look like this:
+
+```astro
+---
+// Import Tailwind and CSS styling across all pages using this layout
+import '../styles/global.css'
+
+// Typechecking props
+interface Props {
+	title?: string;		// Title prop (optional)
+}
+
+// Props passed into the Layout component
+const { title } = Astro.props;
+
+/*
+ * Variable that sets the page title.
+ * If no value is passed to the title prop, use the default 'FLOC'.
+ * Else, if a value is passed, use: 'FLOC - page title`.
+ * Ternary operator is used to manage the page title that is rendered.
+ */
+const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
+--- 
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+
+		<title>{pageTitle}</title>
+	</head>
+	<body>
+		<main role="main">
+			<slot />
+		</main>
+	</body>
+</html>
+```
