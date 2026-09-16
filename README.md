@@ -277,3 +277,65 @@ Go to: `Sanity` -> `the-car-website` -> `Settings` -> `API settings` -> `CORS Or
 Then add the `localhost` address: `http://localhost:4321`.
 
 And enable `Allow credentials`. `Sanity` requires this for authenticated `Studio` requests. Once this is done, we can now login to `Studio` with our `Gmail`, `GitHub` or `Email` credentials.
+
+## Schema
+The `schema` is the structure for the data in the `CMS`. Within the project folder, create a `schemaTypes/` folder in the root of the project. Each schema will have a `TypeScript` file, for example: `schemaTypes/article.ts`.
+
+```typescript
+import { defineField, defineType } from "sanity";
+
+export const articleType = defineType({
+    name: "article",
+    title: "Article",
+    type: "document",
+
+    fields: [
+        defineField({
+            name: "title",
+            title: "Title",
+            type: "string",
+        }),
+        defineField({
+            name: "slug",
+            title: "Slug",
+            type: "slug",
+            options: {
+                source: "title",
+            },
+        }),
+    ],
+});
+```
+
+Within the `schemaTypes/` folder, add an `index.ts` file to reference each schema created.
+
+```typescript
+import { articleType } from "./article";
+
+export const schemaTypes = [
+    articleType,
+];
+```
+
+Within the `sanity.config.ts` file, include the `schemaTypes` directory so the file now looks like this:
+
+```typescript
+import { defineConfig } from 'sanity';
+import { structureTool } from 'sanity/structure';
+import { schemaTypes } from './schemaTypes';
+
+export default defineConfig({
+  projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
+  dataset: import.meta.env.PUBLIC_SANITY_DATASET,
+
+  plugins: [
+    structureTool(),
+  ],
+
+  schema: {
+    types: schemaTypes,
+  },
+});
+```
+
+After these changes, run the development server and open the `Studio` to see the `Article` appear as a document type.
