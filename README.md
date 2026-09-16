@@ -87,3 +87,46 @@ Run `Astro Check` inside of the project:
 ```shell
 $ npm run check
 ```
+
+### ESLint
+`ESLint` is used to analyse the `TypeScript` and `JavaScript` code inside of the project to flag patterns that could be bugs/issues, or inconsistencies against specified coding rules.
+
+```shell
+$ npm install -D eslint @eslint/js eslint-plugin-astro typescript-eslint
+```
+
+Create a `eslint.config.mjs` file:
+
+```mjs
+import eslint from '@eslint/js'
+import astro from 'eslint-plugin-astro'
+import tseslint from 'typescript-eslint'
+
+export default [
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...astro.configs['flat/recommended'],
+
+  {
+    ignores: ['dist/', '.astro/'],
+  },
+]
+```
+
+Update the `package.json` file with scripts to run `ESLint`:
+
+```
+{
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  }
+}
+```
+
+Run `ESLint`:
+
+```shell
+$ npm run lint
+$ npm run lint:fix
+```
