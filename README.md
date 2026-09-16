@@ -49,3 +49,18 @@ Use `NPM` to install `Astro` and setup the scaffold for the application. Follow 
 ```shell
 $ npm create astro@latest .
 ```
+
+### Tailwind
+`Tailwind` is used to style the application. `Tailwind` is installed and configured using:
+
+```shell
+$ npx astro add tailwind
+```
+
+This will install and configure the `Tailwind Vite` plugin. This will update the `astro.config.mjs` file. `Tailwind` comes with a built-in CSS reset called `Preflight`.
+
+This approach generates a `styles/global.css` stylesheet containing the `Tailwind` import. This import needs to be added to the top of the `src/layouts/Layout.astro` layout file.
+
+```astro
+import '../styles/global.css'
+```
