@@ -4,6 +4,7 @@ import '../styles/global.css';
 
 // Import components
 import Header from '../components/Header/index.astro';
+import Footer from '../components/Footer/index.astro';
 
 // Typechecking props
 interface Props {
@@ -40,5 +41,7 @@ const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
 		<main role="main">
 			<slot />
 		</main>
+
+		<Footer />
 	</body>
 </html>
