@@ -1,0 +1,33 @@
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const news = await sanityClient.fetch(`
+        *[_type == "news" && defined(slug.current)] {
+            "slug": slug.current
+        }
+    `);
+
+    return news.map((newsItem) => ({
+        params: { slug: newsItem.slug },
+    }));
+}
+
+const { slug } = Astro.params;
+
+const news = await sanityClient.fetch(
+    `*[_type == "news" && slug.current == $slug][0]`,
+    { slug }
+);
+
+if (!news) {
+    return Astro.redirect('/404');
+}
+---
+
+<Layout title={news.title}>
+    <h1>{news.title}</h1>
+</Layout>
