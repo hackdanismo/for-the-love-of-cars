@@ -310,6 +310,7 @@ export const articleType = defineType({
             name: "title",
             title: "Title",
             type: "string",
+            validation: (rule) => rule.required(),
         }),
         defineField({
             name: "slug",
@@ -317,7 +318,9 @@ export const articleType = defineType({
             type: "slug",
             options: {
                 source: "title",
+                maxLength: 96,
             },
+            validation: (rule) => rule.required(),
         }),
     ],
 });
@@ -355,6 +358,50 @@ export default defineConfig({
 ```
 
 After these changes, run the development server and open the `Studio` to see the `Article` appear as a document type.
+
+### News Schema
+The `News` schema is similar to the `Articles` schema:
+
+```typescript
+import { defineField, defineType } from "sanity";
+
+export const articleType = defineType({
+    name: "article",
+    title: "Article",
+    type: "document",
+
+    fields: [
+        defineField({
+            name: "title",
+            title: "Title",
+            type: "string",
+            validation: (rule) => rule.required(),
+        }),
+        defineField({
+            name: "slug",
+            title: "Slug",
+            type: "slug",
+            options: {
+                source: "title",
+                maxLength: 96,
+            },
+            validation: (rule) => rule.required(),
+        }),
+    ],
+});
+```
+
+Once added, update the `schemaTypes/index.ts` file:
+
+```typescript
+import { articleType } from "./article";
+import { newsType } from "./news";
+
+export const schemaTypes = [
+    articleType,
+    newsType,
+];
+```
 
 ## Pages
 All pages for the `Astro` application are placed inside of the `src/pages` directory. For a page to dynamically created for each `article` added to the CMS, we use the structure:
@@ -490,6 +537,8 @@ const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
 	</body>
 </html>
 ```
+
+The `news` pages will be similar to the `article` pages, but pulling data from the `News` document type in the CMS.
 
 The `homepage` can be found here: `src/pages/index.astro`:
 
