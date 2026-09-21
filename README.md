@@ -553,6 +553,134 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 ```
 
+Extending the Homepage to render the latest articles and news:
+
+```astro
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../layouts/Layout.astro';
+
+// Import components 
+import Card from '../components/Card/index.astro';
+
+// GROQ: | order(publishedAt desc)[0...3] - puts the newest item first and limits to three items
+
+const articles = await sanityClient.fetch(`
+	*[
+		_type == "article" &&
+		defined(slug.current)
+	] | order(publishedAt desc)[0...3] {
+		_id,
+		title,
+		publishedAt,
+		"slug": slug.current
+	}
+`);
+
+const news = await sanityClient.fetch(`
+	*[
+		_type == "news" &&
+		defined(slug.current)
+	] | order(publishedAt desc)[0...3] {
+		_id,
+		title,
+		publishedAt,
+		"slug": slug.current
+	}
+`);
+---
+
+<Layout>
+	<section>
+		<h2>Latest News</h2>
+
+		<div class="card-grid">
+			{news.map((newsItem) => (
+				<Card
+					title={newsItem.title}
+					href={`/news/${newsItem.slug}`}
+					publishedAt={newsItem.publishedAt}
+					type="News"
+				/>
+			))}
+		</div>
+
+		<a href="/news">View all news</a>
+	</section>
+
+	<section>
+		<h2>Latest Articles</h2>
+
+		<div class="card-grid">
+			{articles.map((article) => (
+				<Card
+					title={article.title}
+					href={`/articles/${article.slug}`}
+					publishedAt={article.publishedAt}
+					type="Article"
+				/>
+			))}
+		</div>
+
+		<a href="/articles">View all articles</a>
+	</section>
+</Layout>
+
+<style>
+    section {
+        margin-bottom: 4rem;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .card-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+```
+
+Reduce to a single `sanityClient.fetch()` call:
+
+```astro
+/* 
+ * GROQ: | order(publishedAt desc)[0...3]: 
+ * puts the newest item first and limits to three items.
+ * Reduced to a single sanityClient.fetch() call.
+ */
+const { articles, news } = await sanityClient.fetch(`
+    {
+        "articles": *[
+            _type == "article" &&
+            defined(slug.current)
+        ] | order(publishedAt desc)[0...3] {
+            _id,
+            title,
+            publishedAt,
+            "slug": slug.current
+        },
+
+        "news": *[
+            _type == "news" &&
+            defined(slug.current)
+        ] | order(publishedAt desc)[0...3] {
+            _id,
+            title,
+            publishedAt,
+            "slug": slug.current
+        }
+    }
+`);
+```
+
 ## Components
 All components are placed within the `src/components/` folder. To separate the components into individual directories, a folder structure has been used. For example, the header can be found here: `src/components/Header/index.astro`.
 
