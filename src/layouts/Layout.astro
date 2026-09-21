@@ -1,6 +1,9 @@
 ---
 // Import Tailwind and CSS styling across all pages using this layout
-import '../styles/global.css'
+import '../styles/global.css';
+
+// Import components
+import Header from '../components/Header/index.astro';
 
 // Typechecking props
 interface Props {
@@ -32,6 +35,8 @@ const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
 		<title>{pageTitle}</title>
 	</head>
 	<body>
+		<Header />
+
 		<main role="main">
 			<slot />
 		</main>

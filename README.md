@@ -552,3 +552,21 @@ import Layout from '../layouts/Layout.astro';
 	<h1>Hello, World</h1>
 </Layout>
 ```
+
+## Components
+All components are placed within the `src/components/` folder. To separate the components into individual directories, a folder structure has been used. For example, the header can be found here: `src/components/Header/index.astro`.
+
+Once created, components can be imported into a page or layout:
+
+```astro
+// src/layouts/Layout.astro
+
+// Import components
+import Header from '../components/Header/index.astro';
+```
+
+Then rendered:
+
+```astro
+<Header />
+```
