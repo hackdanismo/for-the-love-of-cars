@@ -1,6 +1,22 @@
 # For the Love of Cars
 Website for Car enthusiasts with news, features and articles.
 
+## Run the Application
+Run the application from within the terminal:
+
+```shell
+# Change directory into the project folder
+$ cd for-the-love-of-cars
+# Install the recommended Node version using nvm
+$ nvm install
+# Set the Node version using nvm
+$ nvm use
+# Run the development server
+$ npm run dev
+```
+
+The project will run locally here: [http://localhost:4321/](http://localhost:4321/).
+
 ## Development
 
 ### Clone the Repository
