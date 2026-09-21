@@ -7,34 +7,11 @@ import Layout from '../layouts/Layout.astro';
 // Import components 
 import Card from '../components/Card/index.astro';
 
-// GROQ: | order(publishedAt desc)[0...3] - puts the newest item first and limits to three items
-
-const articles = await sanityClient.fetch(`
-	*[
-		_type == "article" &&
-		defined(slug.current)
-	] | order(publishedAt desc)[0...3] {
-		_id,
-		title,
-		publishedAt,
-		"slug": slug.current
-	}
-`);
-
-const news = await sanityClient.fetch(`
-	*[
-		_type == "news" &&
-		defined(slug.current)
-	] | order(publishedAt desc)[0...3] {
-		_id,
-		title,
-		publishedAt,
-		"slug": slug.current
-	}
-`);
-
-/* REDUCE TO A SINGLE saityClient.fetch() call:
-
+/* 
+ * GROQ: | order(publishedAt desc)[0...3]: 
+ * puts the newest item first and limits to three items.
+ * Reduced to a single sanityClient.fetch() call.
+ */
 const { articles, news } = await sanityClient.fetch(`
     {
         "articles": *[
@@ -58,7 +35,6 @@ const { articles, news } = await sanityClient.fetch(`
         }
     }
 `);
-*/
 ---
 
 <Layout>
