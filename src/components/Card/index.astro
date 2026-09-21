@@ -1,0 +1,63 @@
+---
+interface Props {
+    title: string;
+    href: string;
+    publishedAt?: string;
+    type?: 'News' | 'Article';
+}
+
+const {
+    title,
+    href,
+    publishedAt,
+    type,
+} = Astro.props;
+---
+
+<article class="card">
+    {type && <span class="card__type">{type}</span>}
+
+    <h2 class="card__title">
+        <a href={href}>
+            {title}
+        </a>
+    </h2>
+
+    {publishedAt && (
+        <time datetime={publishedAt}>
+            {new Date(publishedAt).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            })}
+        </time>
+    )}
+</article>
+
+<style>
+    .card {
+        border: 1px solid #ddd;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .card__type {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+    }
+
+    .card__title {
+        margin: 0 0 0.75rem;
+    }
+
+    .card__title a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .card__title a:hover {
+        text-decoration: underline;
+    }
+</style>
