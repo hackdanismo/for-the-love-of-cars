@@ -1,0 +1,35 @@
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const articles = await sanityClient.fetch(`
+        *[_type == "article" && defined(slug.current)] {
+            "slug": slug.current
+        }
+    `);
+
+    return articles.map((article) => ({
+        params: { slug: article.slug },
+    }));
+}
+
+const { slug } = Astro.params;
+
+const article = await sanityClient.fetch(
+    `*[_type == "article" && slug.current == $slug][0]`,
+    { slug }
+);
+
+if (!article) {
+    return Astro.redirect('/404');
+}
+
+// Example article: http://localhost:4321/articles/new-bmw-i3-to-be-launched-in-2027
+---
+
+<Layout title={article.title}>
+    <h1>{article.title}</h1>
+</Layout>

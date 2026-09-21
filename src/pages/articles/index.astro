@@ -1,0 +1,32 @@
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+const articles = await sanityClient.fetch(`
+    *[
+        _type == "article" &&
+        defined(slug.current)
+    ] | order(publishedAt desc) {
+        _id,
+        title,
+        publishedAt,
+        "slug": slug.current
+    }
+`);
+---
+
+<Layout title="Articles">
+    <h1>Articles</h1>
+
+    <ul>
+        {articles.map((article) => (
+            <li>
+                <a href={`/articles/${article.slug}`}>
+                    {article.title}
+                </a>
+            </li>
+        ))}
+    </ul>
+</Layout>

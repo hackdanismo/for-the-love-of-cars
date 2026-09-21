@@ -1,6 +1,26 @@
 ---
 // Import Tailwind and CSS styling across all pages using this layout
-import '../styles/global.css'
+import '../styles/global.css';
+
+// Import components
+import Header from '../components/Header/index.astro';
+import Footer from '../components/Footer/index.astro';
+
+// Typechecking props
+interface Props {
+	title?: string;		// Title prop (optional)
+}
+
+// Props passed into the Layout component
+const { title } = Astro.props;
+
+/*
+ * Variable that sets the page title.
+ * If no value is passed to the title prop, use the default 'FLOC'.
+ * Else, if a value is passed, use: 'FLOC - page title`.
+ * Ternary operator is used to manage the page title that is rendered.
+ */
+const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
 --- 
 
 <!DOCTYPE html>
@@ -13,11 +33,15 @@ import '../styles/global.css'
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 
-		<title>For the Love of Cars</title>
+		<title>{pageTitle}</title>
 	</head>
 	<body>
+		<Header />
+
 		<main role="main">
 			<slot />
 		</main>
+
+		<Footer />
 	</body>
 </html>

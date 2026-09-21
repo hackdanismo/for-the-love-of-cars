@@ -1,6 +1,22 @@
 # For the Love of Cars
 Website for Car enthusiasts with news, features and articles.
 
+## Run the Application
+Run the application from within the terminal:
+
+```shell
+# Change directory into the project folder
+$ cd for-the-love-of-cars
+# Install the recommended Node version using nvm
+$ nvm install
+# Set the Node version using nvm
+$ nvm use
+# Run the development server
+$ npm run dev
+```
+
+The project will run locally here: [http://localhost:4321/](http://localhost:4321/).
+
 ## Development
 
 ### Clone the Repository
@@ -294,6 +310,7 @@ export const articleType = defineType({
             name: "title",
             title: "Title",
             type: "string",
+            validation: (rule) => rule.required(),
         }),
         defineField({
             name: "slug",
@@ -301,7 +318,9 @@ export const articleType = defineType({
             type: "slug",
             options: {
                 source: "title",
+                maxLength: 96,
             },
+            validation: (rule) => rule.required(),
         }),
     ],
 });
@@ -339,3 +358,215 @@ export default defineConfig({
 ```
 
 After these changes, run the development server and open the `Studio` to see the `Article` appear as a document type.
+
+### News Schema
+The `News` schema is similar to the `Articles` schema:
+
+```typescript
+import { defineField, defineType } from "sanity";
+
+export const articleType = defineType({
+    name: "article",
+    title: "Article",
+    type: "document",
+
+    fields: [
+        defineField({
+            name: "title",
+            title: "Title",
+            type: "string",
+            validation: (rule) => rule.required(),
+        }),
+        defineField({
+            name: "slug",
+            title: "Slug",
+            type: "slug",
+            options: {
+                source: "title",
+                maxLength: 96,
+            },
+            validation: (rule) => rule.required(),
+        }),
+    ],
+});
+```
+
+Once added, update the `schemaTypes/index.ts` file:
+
+```typescript
+import { articleType } from "./article";
+import { newsType } from "./news";
+
+export const schemaTypes = [
+    articleType,
+    newsType,
+];
+```
+
+## Pages
+All pages for the `Astro` application are placed inside of the `src/pages` directory. For a page to dynamically created for each `article` added to the CMS, we use the structure:
+
+```
+src/
+  layouts/
+    Layout.astro
+  pages/
+    articles/
+      [slug].astro
+```
+
+The `pages/articles/[slug].astro` page will look like this:
+
+```astro
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const articles = await sanityClient.fetch(`
+        *[_type == "article" && defined(slug.current)] {
+            "slug": slug.current
+        }
+    `);
+
+    return articles.map((article) => ({
+        params: { slug: article.slug },
+    }));
+}
+
+const { slug } = Astro.params;
+
+const article = await sanityClient.fetch(
+    `*[_type == "article" && slug.current == $slug][0]`,
+    { slug }
+);
+
+if (!article) {
+    return Astro.redirect('/404');
+}
+
+// Example article: http://localhost:4321/articles/new-bmw-i3-to-be-launched-in-2027
+---
+
+<Layout title={article.title}>
+    <h1>{article.title}</h1>
+</Layout>
+```
+
+So we can visit a test article that has been added to the CMS to view the page: `http://localhost:4321/articles/new-bmw-i3-to-be-launched-in-2027`.
+
+To add a main `articles` overview page that is found here: `src/pages/articles/index.astro` and has the URL of: `http://localhost:4321/articles`:
+
+```astro
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+const articles = await sanityClient.fetch(`
+    *[
+        _type == "article" &&
+        defined(slug.current)
+    ] | order(publishedAt desc) {
+        _id,
+        title,
+        publishedAt,
+        "slug": slug.current
+    }
+`);
+---
+
+<Layout title="Articles">
+    <h1>Articles</h1>
+
+    <ul>
+        {articles.map((article) => (
+            <li>
+                <a href={`/articles/${article.slug}`}>
+                    {article.title}
+                </a>
+            </li>
+        ))}
+    </ul>
+</Layout>
+```
+
+The `src/layouts/Layout.astro` file will look like this:
+
+```astro
+---
+// Import Tailwind and CSS styling across all pages using this layout
+import '../styles/global.css'
+
+// Typechecking props
+interface Props {
+	title?: string;		// Title prop (optional)
+}
+
+// Props passed into the Layout component
+const { title } = Astro.props;
+
+/*
+ * Variable that sets the page title.
+ * If no value is passed to the title prop, use the default 'FLOC'.
+ * Else, if a value is passed, use: 'FLOC - page title`.
+ * Ternary operator is used to manage the page title that is rendered.
+ */
+const pageTitle = title ? `FLOC - ${title}` : 'FLOC';
+--- 
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+
+		<title>{pageTitle}</title>
+	</head>
+	<body>
+		<main role="main">
+			<slot />
+		</main>
+	</body>
+</html>
+```
+
+The `news` pages will be similar to the `article` pages, but pulling data from the `News` document type in the CMS.
+
+The `homepage` can be found here: `src/pages/index.astro`:
+
+```astro
+---
+// Include the page layout/structure.
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+	<h1>Hello, World</h1>
+</Layout>
+```
+
+## Components
+All components are placed within the `src/components/` folder. To separate the components into individual directories, a folder structure has been used. For example, the header can be found here: `src/components/Header/index.astro`.
+
+Once created, components can be imported into a page or layout:
+
+```astro
+// src/layouts/Layout.astro
+
+// Import components
+import Header from '../components/Header/index.astro';
+```
+
+Then rendered:
+
+```astro
+<Header />
+```
