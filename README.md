@@ -410,6 +410,43 @@ if (!article) {
 
 So we can visit a test article that has been added to the CMS to view the page: `http://localhost:4321/articles/new-bmw-i3-to-be-launched-in-2027`.
 
+To add a main `articles` overview page that is found here: `src/pages/articles/index.astro` and has the URL of: `http://localhost:4321/articles`:
+
+```astro
+---
+import { sanityClient } from 'sanity:client';
+
+// Include the page layout/structure.
+import Layout from '../../layouts/Layout.astro';
+
+const articles = await sanityClient.fetch(`
+    *[
+        _type == "article" &&
+        defined(slug.current)
+    ] | order(publishedAt desc) {
+        _id,
+        title,
+        publishedAt,
+        "slug": slug.current
+    }
+`);
+---
+
+<Layout title="Articles">
+    <h1>Articles</h1>
+
+    <ul>
+        {articles.map((article) => (
+            <li>
+                <a href={`/articles/${article.slug}`}>
+                    {article.title}
+                </a>
+            </li>
+        ))}
+    </ul>
+</Layout>
+```
+
 The `src/layouts/Layout.astro` file will look like this:
 
 ```astro
